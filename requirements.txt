@@ -1,0 +1,9 @@
+Flask~=3.0.3
+Flask-SQLAlchemy
+Celery~=5.4.0
+redis
+requests~=2.32.3
+kafka-python
+Flask-Migrate
+Flask-Marshmallow
+Marshmallow
