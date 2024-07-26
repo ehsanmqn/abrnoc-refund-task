@@ -22,4 +22,8 @@ def create_app(config_class=Config):
 
     app.register_blueprint(refunds_bp, url_prefix='/api')
 
+    # from app import start_consumer_thread
+    # with app.app_context():
+    #     start_consumer_thread()
+
     return app
