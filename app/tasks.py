@@ -26,13 +26,10 @@ def process_refund(refund_id):
 @celery.task
 def check_status():
     with celery.app.app_context():
-        transactions = Transaction.query.filter_by(status='pending').all()
 
         # Survey transactions
+        transactions = Transaction.query.filter_by(status='pending').all()
         for transaction in transactions:
-            response = requests.get(f'http://external-api/payment/status?transaction_id={transaction.id}')
-
-            # Check if the transaction is older than 1 hour
             if datetime.utcnow() - transaction.created_at > timedelta(hours=1):
                 response = requests.get(f'http://external-api/payment/status?transaction_id={transaction.id}')
 
@@ -61,9 +58,8 @@ def check_status():
                             db.session.add(refund)
                             db.session.commit()
 
-        refunds = Refund.query.filter_by(status='pending').all()
-
         # Survey refunds
+        refunds = Refund.query.filter_by(status='pending').all()
         for refund in refunds:
             response = requests.get(f'http://external-api/refund/status?refund_id={refund.id}')
 
