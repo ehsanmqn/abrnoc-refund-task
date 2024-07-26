@@ -1,8 +1,7 @@
 import json
 from kafka import KafkaConsumer
 from app import create_app, db
-from app.models import Refund
-from app.tasks import process_refund
+from app.models import Transaction
 
 app = create_app()
 
@@ -19,13 +18,12 @@ with app.app_context():
     for message in consumer:
         data = message.value
 
-        refund = Refund(
+        transaction = Transaction(
             transaction_id=data['transaction_id'],
             amount=data['amount'],
-            reason=data['reason']
+            description=data['description'],
+            payment_method=data['payment_method']
         )
 
-        db.session.add(refund)
+        db.session.add(transaction)
         db.session.commit()
-
-        process_refund.delay(refund.id)
