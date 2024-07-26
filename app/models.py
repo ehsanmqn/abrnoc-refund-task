@@ -5,6 +5,7 @@ from sqlalchemy.sql import func
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(64), index=True)
+    transaction_id = db.Column(db.String(64), index=True, unique=True)
     amount = db.Column(db.Float)
     payment_method = db.Column(db.String(64))
     description = db.Column(db.String(128))
