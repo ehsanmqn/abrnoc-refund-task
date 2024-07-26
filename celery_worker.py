@@ -1,5 +1,6 @@
 from app import create_app
 from celery import Celery
+from celery.schedules import crontab
 
 app = create_app()
 
@@ -23,3 +24,12 @@ def make_celery(app):
 
 
 celery = make_celery(app)
+
+celery.conf.beat_schedule = {
+    'check_status-every-30-minutes': {
+        'task': 'app.tasks.check_status',
+        'schedule': crontab(minute='*/30'),  # Runs every 30 minutes
+    },
+}
+
+celery.conf.timezone = 'UTC'
