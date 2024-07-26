@@ -14,6 +14,7 @@ class Transaction(db.Model):
 
 class Refund(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    refund_id = db.Column(db.String(64), index=True)
     transaction_id = db.Column(db.String(64), index=True)
     amount = db.Column(db.Float)
     reason = db.Column(db.String(128))
