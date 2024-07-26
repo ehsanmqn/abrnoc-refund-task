@@ -11,6 +11,7 @@ class RefundSchema(Schema):
 
 class TransactionSchema(Schema):
     id = fields.Int(dump_only=True)
+    user_id = fields.Str(required=True)
     transaction_id = fields.Str(required=True)
     amount = fields.Float(required=True)
     description = fields.Str()
