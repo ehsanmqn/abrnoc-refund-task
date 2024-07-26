@@ -1,31 +1,54 @@
+import asyncio
 import json
-from kafka import KafkaConsumer
+from threading import Thread
+from aiokafka import AIOKafkaConsumer
+from flask import current_app as app
+from concurrent.futures import ThreadPoolExecutor
 
-from app import create_app, db
+from app import db
 from app.models import Transaction
 
-app = create_app()
+executor = ThreadPoolExecutor(max_workers=10)
 
-consumer = KafkaConsumer(
-    bootstrap_servers=app.config['KAFKA_BOOTSTRAP_SERVERS'],
-    auto_offset_reset='earliest',
-    enable_auto_commit=True,
-    group_id='my-group',
-    value_deserializer=lambda x: json.loads(x.decode('utf-8'))
-)
 
-consumer.subscribe([app.config['REFUND_TOPIC']])
+async def handle_message(data):
+    transaction = Transaction(
+        transaction_id=data['transaction_id'],
+        amount=data['amount'],
+        description=data['description'],
+        payment_method=data['payment_method']
+    )
+    db.session.add(transaction)
 
-with app.app_context():
-    for message in consumer:
-        data = message.value
+    await asyncio.get_event_loop().run_in_executor(executor, db.session.commit)
 
-        transaction = Transaction(
-            transaction_id=data['transaction_id'],
-            amount=data['amount'],
-            description=data['description'],
-            payment_method=data['payment_method']
-        )
 
-        db.session.add(transaction)
-        db.session.commit()
+async def consume_messages():
+    consumer = AIOKafkaConsumer(
+        app.config['REFUND_TOPIC'],
+        bootstrap_servers=app.config['KAFKA_BOOTSTRAP_SERVERS'],
+        group_id='my-group',
+        auto_offset_reset='earliest',
+        value_deserializer=lambda x: json.loads(x.decode('utf-8'))
+    )
+
+    await consumer.start()
+
+    try:
+        async for message in consumer:
+            await handle_message(message.value)
+    finally:
+        await consumer.stop()
+
+
+def start_consumer_loop():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    with app.app_context():
+        loop.run_until_complete(consume_messages())
+
+
+def start_consumer_thread():
+    t = Thread(target=start_consumer_loop)
+    t.start()
