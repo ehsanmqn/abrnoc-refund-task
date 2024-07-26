@@ -19,11 +19,9 @@ def create_app(config_class=Config):
     ma.init_app(app)
 
     from app.blueprints.refunds import refunds_bp
+    from app.blueprints.transactions import transactions_bp
 
     app.register_blueprint(refunds_bp, url_prefix='/api')
-
-    # from app import start_consumer_thread
-    # with app.app_context():
-    #     start_consumer_thread()
+    app.register_blueprint(transactions_bp, url_prefix='/api')
 
     return app

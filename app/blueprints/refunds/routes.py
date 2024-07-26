@@ -1,9 +1,7 @@
 from flask import request, jsonify
-from app import db
-from app.models import Refund
 from app.schemas import RefundSchema
 from . import refunds_bp
-from .service import get_refund_by_id, get_all_refunds, filter_refunds
+from .services import get_refund_by_id, get_all_refunds, filter_refunds
 
 refund_schema = RefundSchema()
 refunds_schema = RefundSchema(many=True)
