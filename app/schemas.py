@@ -7,3 +7,12 @@ class RefundSchema(Schema):
     amount = fields.Float()
     reason = fields.Str()
     status = fields.Str()
+
+
+class TransactionSchema(Schema):
+    id = fields.Int(dump_only=True)
+    transaction_id = fields.Str(required=True)
+    amount = fields.Float(required=True)
+    description = fields.Str()
+    payment_method = fields.Str()
+    status = fields.Str()
