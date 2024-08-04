@@ -8,6 +8,6 @@ if __name__ == '__main__':
         db.create_all()
 
     with app.app_context():
-        start_consumer_thread()
+        start_consumer_thread(app)
 
     app.run(debug=True)

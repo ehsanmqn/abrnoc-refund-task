@@ -41,7 +41,7 @@ async def consume_messages():
         await consumer.stop()
 
 
-def start_consumer_loop():
+def start_consumer_loop(app):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 
@@ -49,6 +49,6 @@ def start_consumer_loop():
         loop.run_until_complete(consume_messages())
 
 
-def start_consumer_thread():
-    t = Thread(target=start_consumer_loop)
+def start_consumer_thread(app):
+    t = Thread(target=start_consumer_loop, args=(app,))
     t.start()
