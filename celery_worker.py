@@ -30,7 +30,7 @@ celery = make_celery(app)
 celery.conf.beat_schedule = {
     'check_status-every-30-minutes': {
         'task': 'app.tasks.check_status',
-        'schedule': crontab(minute='*/1'),  # Runs every 30 minutes
+        'schedule': crontab(minute='*/30'),  # Runs every 30 minutes
     },
 }
 
