@@ -44,13 +44,9 @@ This project is a Flask-based application designed for handling payments and ref
 1. **Create the database**:
 
     ```sh
-    python manage.py create-db
-    ```
-
-2. **Drop the database** (if needed):
-
-    ```sh
-    python manage.py drop-db
+   flask db init
+   flask db migrate -m "Initial migration."
+   flask db upgrade
     ```
 
 ## Running the Application
@@ -72,12 +68,7 @@ This project is a Flask-based application designed for handling payments and ref
     ```sh
     celery -A celery_worker.celery beat --loglevel=info
     ```
-
-4. **Start the Kafka consumer**:
-
-    ```sh
-    python consumer.py
-    ```
+   
 
 ## API Endpoints
 
