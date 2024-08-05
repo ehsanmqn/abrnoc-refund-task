@@ -4,14 +4,22 @@ from celery.schedules import crontab
 
 app = create_app()
 
+app.config.update(
+    broker_url='redis://localhost:6379/0',
+    result_backend='redis://localhost:6379/0'
+)
+
 
 def make_celery(app):
     celery = Celery(
         app.import_name,
-        backend=app.config['CELERY_RESULT_BACKEND'],
-        broker=app.config['CELERY_BROKER_URL']
+        backend=app.config['result_backend'],
+        broker=app.config['broker_url']
     )
     celery.conf.update(app.config)
+    celery.conf.update(
+        imports=['app.tasks'],
+    )
     TaskBase = celery.Task
 
     class ContextTask(TaskBase):
@@ -28,7 +36,7 @@ celery = make_celery(app)
 celery.conf.beat_schedule = {
     'check_status-every-30-minutes': {
         'task': 'app.tasks.check_status',
-        'schedule': crontab(minute='*/30'),  # Runs every 30 minutes
+        'schedule': crontab(minute='*/1'),  # Runs every 30 minutes
     },
 }
 
