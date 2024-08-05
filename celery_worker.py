@@ -4,19 +4,13 @@ from celery.schedules import crontab
 
 app = create_app()
 
-app.config.update(
-    broker_url='redis://localhost:6379/0',
-    result_backend='redis://localhost:6379/0'
-)
-
 
 def make_celery(app):
     celery = Celery(
         app.import_name,
-        backend=app.config['result_backend'],
-        broker=app.config['broker_url']
+        backend=app.config['CELERY_BACKEND'],
+        broker=app.config['CELERY_BROKER']
     )
-    celery.conf.update(app.config)
     celery.conf.update(
         imports=['app.tasks'],
     )
